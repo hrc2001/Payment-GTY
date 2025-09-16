@@ -419,14 +419,14 @@ const AnimatedEarth = () => {
       }
       renderer.dispose();
     };
-  }, [currentLocation, isAnimating, locations]);
+  }, []);
 
   // Update connection lines when location changes
   useEffect(() => {
     if (sceneRef.current && markersRef.current.length) {
       updateConnectionLines(currentLocation);
     }
-  }, [currentLocation, textureLoaded, updateConnectionLines]);
+  }, [currentLocation, textureLoaded]);
 
   // Animate camera to focus on current location
   useEffect(() => {
