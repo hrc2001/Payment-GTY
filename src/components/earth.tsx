@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import * as THREE from "three";
 
 const AnimatedEarth = () => {
@@ -21,7 +21,7 @@ const AnimatedEarth = () => {
   const [textureLoaded, setTextureLoaded] = useState(false);
 
   // Famous locations with their coordinates
-  const locations = [
+  const locations: { name: string; lat: number; lon: number; color: number }[] = [
     { name: "New York", lat: 40.7128, lon: -74.006, color: 0xff4444 },
     { name: "London", lat: 51.5074, lon: -0.1278, color: 0x44ff44 },
     { name: "Tokyo", lat: 35.6762, lon: 139.6503, color: 0x4444ff },
@@ -72,10 +72,10 @@ const AnimatedEarth = () => {
   };
 
   // Update connection lines
-  const updateConnectionLines = (currentIndex: number) => {
+  const updateConnectionLines = useCallback((currentIndex: number) => {
     // Remove existing lines
     linesRef.current.forEach((line) => {
-      sceneRef.current?.remove(line);
+      sceneRef?.current?.remove(line);
     });
     linesRef.current = [];
 
@@ -99,9 +99,9 @@ const AnimatedEarth = () => {
       locations[currentIndex].color
     );
 
-    sceneRef.current.add(line);
+    sceneRef?.current?.add(line);
     linesRef.current.push(line);
-  };
+  }, [locations]);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -294,7 +294,7 @@ const AnimatedEarth = () => {
       ring: THREE.Mesh;
       location: { lat: number; lon: number };
     }[] = [];
-    locations.forEach((location, index) => {
+    locations.forEach((location) => {
       const markerGeometry = new THREE.SphereGeometry(0.02, 16, 16);
       const markerMaterial = new THREE.MeshBasicMaterial({
         color: location.color,
@@ -345,7 +345,7 @@ const AnimatedEarth = () => {
       atmosphere.rotation.y += 0.002;
 
       // Animate markers
-      markers.forEach((item, index) => {
+      markers.forEach((item: any, index: number) => {
         const time = Date.now() * 0.005;
 
         if (index === currentLocation) {
@@ -362,8 +362,9 @@ const AnimatedEarth = () => {
       });
 
       // Animate connection lines
-      linesRef.current.forEach((line, index) => {
-        line.material.opacity = 0.3 + Math.sin(Date.now() * 0.005) * 0.2;
+      linesRef.current.forEach((line) => {
+        (line.material as THREE.LineBasicMaterial).opacity =
+          0.3 + Math.sin(Date.now() * 0.005) * 0.2;
       });
 
       // Animate twinkling stars - make them blink
@@ -418,14 +419,14 @@ const AnimatedEarth = () => {
       }
       renderer.dispose();
     };
-  }, []);
+  }, [currentLocation, isAnimating, locations]);
 
   // Update connection lines when location changes
   useEffect(() => {
     if (sceneRef.current && markersRef.current.length) {
       updateConnectionLines(currentLocation);
     }
-  }, [currentLocation, textureLoaded]);
+  }, [currentLocation, textureLoaded, updateConnectionLines]);
 
   // Animate camera to focus on current location
   useEffect(() => {

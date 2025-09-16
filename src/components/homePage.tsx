@@ -83,7 +83,7 @@ export default function HomePage() {
         clearTimeout(highlightTimeoutRef.current);
       }
     };
-  }, [features.length]);
+  }, []);
 
   const onClickGetStarted = () => {
     if (sectionRef.current) {
