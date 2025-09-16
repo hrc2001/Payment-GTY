@@ -123,7 +123,7 @@ export default function HomePage() {
             height: `${particle.height}px`,
             top: `${particle.top}%`,
             left: `${particle.left}%`,
-            animation: `${particle.animation} ${particle.duration}s infinite ease-in-out`,
+            animation: `${particle.animation} ${particle.duration}s  infinite ease-in-out`,
             animationDelay: `${particle.delay}s`,
           }}></div>
       ))}
